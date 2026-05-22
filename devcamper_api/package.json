@@ -1,0 +1,23 @@
+{
+  "name": "devcamper_api",
+  "version": "1.0.0",
+  "description": "Devcamper backend API",
+  "license": "MIT",
+  "author": "Mehdi Bouaziz",
+  "type": "module",
+  "main": "server.ts",
+  "scripts": {
+    "start": "NODE_ENV= production node server",
+    "dev": "nodemon server"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

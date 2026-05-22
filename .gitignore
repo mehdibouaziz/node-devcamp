@@ -1,0 +1,6 @@
+/devcamper_api/node_modules/
+/devcamper_api/.env
+/devcamper_api/*.env
+
+/devcamper_project_resources/
+/.idea/
