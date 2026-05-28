@@ -7,15 +7,21 @@
   "type": "module",
   "main": "server.ts",
   "scripts": {
-    "start": "NODE_ENV= production node server",
+    "start": "NODE_ENV=production node server",
     "dev": "nodemon server"
   },
   "dependencies": {
+    "chalk": "^5.6.2",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.2",
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
+    "@tsconfig/node24": "^24.0.4",
     "@types/express": "^5.0.6",
+    "@types/node": "^25.9.1",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"

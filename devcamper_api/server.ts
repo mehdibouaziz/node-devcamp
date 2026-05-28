@@ -1,23 +1,29 @@
-import express from 'express';
 import 'dotenv/config';
+import {app} from "./src/index.ts";
+import connectDB from "./src/config/db.ts";
+import dns from "node:dns";
+import log from "./src/utils/niceConsole.ts";
 
-import bootcampsRouter from './routes/bootcamps.ts'
+// prevents connexion error when running dev on local due to pihole
+if (process.env.NODE_ENV !== "production") {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+}
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use('/api/v1/bootcamps', bootcampsRouter);
+void connectDB();
 
-app.get('/', (req, res) => {
-    res.status(200).json({
-        success: true,
-        msg: 'Hello World'
-    })
-})
-
-app.listen(
+const server = app.listen(
     PORT,
     () => {
-        console.log(`Server running in ${process.env.NODE_ENV} mode at http://localhost:${PORT}`)
+        log.success(`Server running in ${process.env.NODE_ENV} mode at http://localhost:${PORT}`)
     }
 );
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err: Error, promise) => {
+    log.error(`Error: ${err.message}`);
+    server.close(() => {
+        process.exit(1);
+    });
+});
