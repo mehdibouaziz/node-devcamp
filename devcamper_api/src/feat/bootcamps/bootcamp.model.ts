@@ -1,4 +1,18 @@
-import {Schema, model, connect} from 'mongoose';
+import {model, Schema} from 'mongoose';
+import slugify from "slugify";
+import log from "../../utils/niceConsole.ts";
+import geocoder from "../../middleware/geocoder.ts";
+
+export type BootcampLocation = {
+    type: 'Point',
+    coordinates: number[],
+    formattedAddress?: string,
+    street?: string,
+    city?: string,
+    state?: string,
+    zipcode?: string,
+    country?: string
+}
 
 const bootcampSchema = new Schema({
     name: {
@@ -102,6 +116,17 @@ const bootcampSchema = new Schema({
     //     required: true
     // }
 });
+
+// Create bootcamp slug from the name
+bootcampSchema.pre('save', function() {
+    this.slug = slugify(this.name, {lower: true});
+    log.text(this.slug);
+});
+
+// Geocoding
+bootcampSchema.pre('save', async function() {
+    this.location = await geocoder(this.address);
+})
 
 const Bootcamp = model("Bootcamp", bootcampSchema);
 
