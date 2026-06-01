@@ -8,7 +8,6 @@ import {Error} from "mongoose";
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     // log to console for dev
     console.log(chalk.red(err.stack));
-    console.log(err);
 
     const error = new ErrorResponse(err.message, 500, err.stack);
 
