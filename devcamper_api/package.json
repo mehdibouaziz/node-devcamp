@@ -11,6 +11,7 @@
     "dev": "nodemon server"
   },
   "dependencies": {
+    "@types/morgan": "^1.9.10",
     "chalk": "^5.6.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

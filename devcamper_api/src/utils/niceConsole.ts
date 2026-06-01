@@ -16,11 +16,16 @@ const success = (...args: string[]) => {
     console.log(chalk.green(`+ ${args.join(' ')}`))
 }
 
+const text = (...args: string[]) => {
+    console.log(`> ${args.join(' ')}`)
+}
+
 const log = {
     info,
-    success,
     warning,
-    error
+    error,
+    success,
+    text
 }
 
 export default log;

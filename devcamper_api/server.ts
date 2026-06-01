@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {app} from "./src/index.ts";
+import app from "./src/index.ts";
 import connectDB from "./src/config/db.ts";
 import dns from "node:dns";
 import log from "./src/utils/niceConsole.ts";

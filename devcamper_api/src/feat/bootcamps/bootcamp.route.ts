@@ -1,5 +1,5 @@
 import express from "express";
-import {getBootcamps, getBootcamp, createBootcamp, updateBootcamp, deleteBootcamp} from './controller.ts'
+import {getBootcamps, getBootcamp, createBootcamp, updateBootcamp, deleteBootcamp} from './bootcamp.controller.ts'
 
 const router = express.Router();
 
