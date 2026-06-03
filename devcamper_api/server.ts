@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import app from "./src/index.ts";
-import connectDB from "./src/config/db.ts";
+import connectDB from "./db/db.ts";
 import dns from "node:dns";
 import log from "./src/utils/niceConsole.ts";
 
@@ -11,7 +11,9 @@ if (process.env.NODE_ENV !== "production") {
 
 const PORT = process.env.PORT || 5000;
 
-void connectDB();
+// connect to mongo DB
+const uri = process.env.MONGODB_URI ?? '';
+void connectDB(uri);
 
 const server = app.listen(
     PORT,

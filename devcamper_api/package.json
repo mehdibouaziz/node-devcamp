@@ -8,7 +8,8 @@
   "main": "server.ts",
   "scripts": {
     "start": "NODE_ENV=production node server",
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "seeder": "ts-node db/seeder.ts"
   },
   "dependencies": {
     "@types/geojson": "^7946.0.16",
