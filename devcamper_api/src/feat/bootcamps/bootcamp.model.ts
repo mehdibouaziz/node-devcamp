@@ -1,6 +1,5 @@
 import {model, Schema} from 'mongoose';
 import slugify from "slugify";
-import log from "../../utils/niceConsole.ts";
 import geocoder from "../../middleware/geocoder.ts";
 
 export type BootcampLocation = {
@@ -14,7 +13,28 @@ export type BootcampLocation = {
     country?: string
 }
 
-const bootcampSchema = new Schema({
+interface IBootcamp {
+    name: string,
+    slug?: string,
+    description: string,
+    website?: string,
+    phone?: string,
+    email?: string,
+    address: string,
+    location?: BootcampLocation,
+    careers: string[],
+    averageRating?: number,
+    averageCost?: number,
+    photo?: string,
+    housing?: boolean,
+    jobAssistance?: boolean,
+    jobGuarantee?: boolean,
+    acceptGi?: boolean,
+    createdAt?: string,
+    // user: ????
+}
+
+const bootcampSchema = new Schema<IBootcamp>({
     name: {
         type: String,
         required: [true, 'Please add a name'],
@@ -120,7 +140,6 @@ const bootcampSchema = new Schema({
 // Create bootcamp slug from the name
 bootcampSchema.pre('save', function() {
     this.slug = slugify(this.name, {lower: true});
-    log.text(this.slug);
 });
 
 // Geocoding
@@ -128,6 +147,6 @@ bootcampSchema.pre('save', async function() {
     this.location = await geocoder(this.address);
 })
 
-const Bootcamp = model("Bootcamp", bootcampSchema);
+const Bootcamp = model<IBootcamp>('Bootcamp', bootcampSchema);
 
 export default Bootcamp;

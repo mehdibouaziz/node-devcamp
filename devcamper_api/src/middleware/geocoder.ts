@@ -19,9 +19,6 @@ const geocoder = async (q: string) : Promise<BootcampLocation> => {
     if(feature && feature.geometry.type !== 'Point'){
         log.warning('Geocoder: result found, but geometry not of type Point')
     }
-    if(feature){
-        console.log(feature);
-    }
 
     if(feature && feature.geometry.type === 'Point'){
         return {

@@ -4,7 +4,7 @@ import log from "../../utils/niceConsole.ts";
 
 export const seedBootcamps = async () => {
     try {
-        await Bootcamp.insertMany(bootcamps);
+        await Bootcamp.create(bootcamps);
         log.success('Bootcamps imported')
     } catch (err) {
         console.error(err);
