@@ -7,6 +7,8 @@ import errorHandler from './middleware/error.ts'
 
 const app = express();
 
+app.set('query parser', 'extended');
+
 // middleware
 app.use(express.json());
 
