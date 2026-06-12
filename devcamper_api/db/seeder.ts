@@ -5,7 +5,8 @@ import {createInterface} from "node:readline/promises";
 import connectDB from "./db.ts";
 import log from "../src/utils/niceConsole.ts";
 //seeders
-import {seedBootcamps, wipeBootcamps} from "../src/feat/bootcamps/bootcamp.seeder.ts";
+import {seedBootcamps, deleteBootcamps} from "../src/feat/bootcamps/bootcamp.seeder.ts";
+import {deleteCourses, seedCourses} from "../src/feat/courses/course.seeder.ts";
 
 
 if (process.env.NODE_ENV !== "production") {
@@ -20,11 +21,13 @@ await connectDB(uri);
 // import into DB
 const importData = async () => {
     await seedBootcamps();
+    await seedCourses();
 }
 
 // DELETE database
 const deleteData = async () => {
-    await wipeBootcamps();
+    await deleteBootcamps();
+    await deleteCourses();
 }
 
 

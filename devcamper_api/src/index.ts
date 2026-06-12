@@ -1,8 +1,9 @@
 import express from 'express';
 import morgan from "morgan";
 
-import bootcampsRouter from './feat/bootcamps/bootcamp.route.ts'
-import errorHandler from './middleware/error.ts'
+import bootcampsRouter from './feat/bootcamps/bootcamp.route.ts';
+import coursesRouter from './feat/courses/course.route.ts';
+import errorHandler from './middleware/error.ts';
 
 
 const app = express();
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV !== "production") {
 
 // routers
 app.use('/api/v1/bootcamps', bootcampsRouter);
+app.use('/api/v1/courses', coursesRouter);
 
 app.get('/', (req, res) => {
     res.status(200).json({

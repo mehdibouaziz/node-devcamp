@@ -11,7 +11,7 @@ export const seedBootcamps = async () => {
     }
 }
 
-export const wipeBootcamps = async () => {
+export const deleteBootcamps = async () => {
     try {
         await Bootcamp.deleteMany();
         log.warning('Bootcamps deleted')

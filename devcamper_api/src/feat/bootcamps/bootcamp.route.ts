@@ -6,9 +6,13 @@ import {
     updateBootcamp,
     deleteBootcamp,
     getBootcampsInRadius
-} from './bootcamp.controller.ts'
+} from './bootcamp.controller.ts';
+import courseRouter from "../courses/course.route.ts"
 
 const router = express.Router();
+
+// reroute to related resources
+router.use('/:bootcampId/courses', courseRouter);
 
 router
     .route('/')

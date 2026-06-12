@@ -3,7 +3,7 @@ import Bootcamp from "./bootcamp.model.ts";
 import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import complexQuery, {getPagination} from "../../utils/complexQuery.ts";
-import _ from "lodash"
+import _ from "lodash";
 
 /**
  * @desc Get all bootcamps
