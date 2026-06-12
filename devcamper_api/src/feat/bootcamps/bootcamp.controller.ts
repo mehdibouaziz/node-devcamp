@@ -3,7 +3,7 @@ import Bootcamp from "./bootcamp.model.ts";
 import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import complexQuery, {getPagination} from "../../utils/complexQuery.ts";
-import { pick } from "lodash"
+import _ from "lodash"
 
 /**
  * @desc Get all bootcamps
@@ -21,7 +21,7 @@ export const getBootcamps = asyncHandler(async (req: Request, res: Response, nex
             success: true,
             count: bootcamps.length,
             data: bootcamps,
-            pagination: pick(pagination, ['next', 'prev'])
+            pagination: _.pick(pagination, ['next', 'prev'])
         });
 })
 
