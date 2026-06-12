@@ -2,7 +2,8 @@ import type {Request, Response, NextFunction} from 'express';
 import Bootcamp from "./bootcamp.model.ts";
 import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
-import queryParser from "../../utils/mongoQueryParser.ts";
+import complexQuery, {getPagination} from "../../utils/complexQuery.ts";
+import { pick } from "lodash"
 
 /**
  * @desc Get all bootcamps
@@ -11,18 +12,16 @@ import queryParser from "../../utils/mongoQueryParser.ts";
  */
 export const getBootcamps = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
 
-    const parsedQuery = queryParser(req.query);
-
-    const query = Bootcamp.find(parsedQuery);
-
-    const bootcamps = await Bootcamp.find(query);
+    const pagination = await getPagination(req.query, Bootcamp);
+    const bootcamps = await complexQuery(req.query, Bootcamp, pagination);
 
     res
         .status(200)
         .json({
             success: true,
             count: bootcamps.length,
-            data: bootcamps
+            data: bootcamps,
+            pagination: pick(pagination, ['next', 'prev'])
         });
 })
 
