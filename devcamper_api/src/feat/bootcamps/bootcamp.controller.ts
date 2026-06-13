@@ -14,6 +14,7 @@ export const getBootcamps = asyncHandler(async (req: Request, res: Response, nex
 
     const pagination = await getPagination(req.query, Bootcamp);
     const bootcamps = await complexQuery(req.query, Bootcamp, pagination);
+    // todo: ADD COURSES with .populate
 
     res
         .status(200)
@@ -90,11 +91,13 @@ export const updateBootcamp = asyncHandler(async (req: Request, res: Response, n
  * @access Private
  */
 export const deleteBootcamp = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+    const bootcamp = await Bootcamp.findById(req.params.id);
 
     if (!bootcamp) {
         return next(new ErrorResponse(`Bootcamp not found`, 404));
     }
+
+    await bootcamp.deleteOne();
 
     res
         .status(200)
