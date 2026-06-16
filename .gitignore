@@ -2,6 +2,7 @@
 /devcamper_api/.env
 /devcamper_api/*.env
 /devcamper_api/src/config/*.env
+/devcamper_api/public/
 
 /devcamper_project_resources/
 /.idea/
