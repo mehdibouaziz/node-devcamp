@@ -1,8 +1,4 @@
 import {model, Schema} from 'mongoose';
-import slugify from "slugify";
-import geocoder from "../../middleware/geocoder.ts";
-import Course from "../courses/course.model.ts";
-import log from "../../utils/niceConsole.ts";
 
 export type BootcampLocation = {
     type: 'Point',
@@ -15,7 +11,7 @@ export type BootcampLocation = {
     country?: string
 }
 
-interface IBootcamp {
+export interface IBootcamp {
     name: string,
     slug?: string,
     description: string,
@@ -143,25 +139,6 @@ const bootcampSchema = new Schema<IBootcamp>({
         toObject: {virtuals: true},
     });
 
-// Create bootcamp slug from the name
-bootcampSchema.pre('save', function () {
-    this.slug = slugify(this.name, {lower: true});
-});
-
-// Geocoding
-bootcampSchema.pre('save', async function () {
-    this.location = await geocoder(this.address);
-})
-
-// cascading delete
-bootcampSchema.pre('deleteOne',
-    { document: true, query: false },  // this works for bootcamp.deleteOne, not for Bootcamp.findByIdAndDelete
-    async function () {
-    log.warning(`Courses attached to bootcamp ${this._id} deleted`)
-    await Course.deleteMany({
-        bootcamp: this._id,
-    })
-})
 
 // populate courses
 bootcampSchema.virtual('courses', {

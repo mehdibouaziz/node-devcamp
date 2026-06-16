@@ -20,12 +20,17 @@ const text = (...args: string[]) => {
     console.log(`> ${args.join(' ')}`)
 }
 
+const debug = (...args: string[]) => {
+    console.log(chalk.bgBlueBright(`>>>> ${args.join(' ')}`))
+}
+
 const log = {
     info,
     warning,
     error,
     success,
-    text
+    text,
+    debug
 }
 
 export default log;

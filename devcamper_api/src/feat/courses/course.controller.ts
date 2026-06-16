@@ -1,8 +1,8 @@
 import type {Request, Response, NextFunction} from 'express';
-import Course from "./course.model.ts";
+import CourseR from "./course.repository.ts";
+import BootcampR from "../bootcamps/bootcamp.repository.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import ErrorResponse from "../../utils/errorResponse.ts";
-import Bootcamp from "../bootcamps/bootcamp.model.ts";
 
 /**
  * @desc Get all courses
@@ -11,18 +11,12 @@ import Bootcamp from "../bootcamps/bootcamp.model.ts";
  * @access Public
  */
 export const getCourses = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    let query;
-
-    if (req.params.bootcampId) {
-        query = Course.find({ bootcamp: req.params.bootcampId });
-    } else {
-        query = Course.find().populate({
-            path: 'bootcamp',
-            select: 'name description',
-        });
+    const bootcamp = await BootcampR.fetchBootcamp(req.params.bootcampId);
+    if (req.params.bootcampId && !bootcamp) {
+        return next(new ErrorResponse(`Bootcamp not found`, 404));
     }
 
-    const courses = await query;
+    const courses = await CourseR.fetchCourses(bootcamp?._id);
 
     res
         .status(200)
@@ -39,12 +33,9 @@ export const getCourses = asyncHandler(async (req: Request, res: Response, next:
  * @access Public
  */
 export const getCourse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const course = await Course.findById(req.params.id).populate({
-        path: 'bootcamp',
-        select: 'name description'
-    });
+    const course = await CourseR.fetchCourse(req.params.id);
 
-    if(!course) {
+    if (!course) {
         return next(new ErrorResponse(`Course not found`, 404));
     }
 
@@ -62,19 +53,12 @@ export const getCourse = asyncHandler(async (req: Request, res: Response, next: 
  * @access Private
  */
 export const createCourse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const data = {
-        ...req.body,
-        bootcamp: req.params.bootcampId,
-        // todo add user
-    }
-
-    const bootcamp = Bootcamp.findById(data.bootcamp);
+    const bootcamp = await BootcampR.fetchBootcamp(req.params.bootcampId);
     if (!bootcamp) {
         return next(new ErrorResponse(`Bootcamp not found`, 404));
     }
 
-    const course = new Course(data);
-    await course.save();
+    const course = await CourseR.createCourse(req.body, bootcamp._id);
 
     res.status(201).json({
         success: true,
@@ -88,10 +72,7 @@ export const createCourse = asyncHandler(async (req: Request, res: Response, nex
  * @access Private
  */
 export const updateCourse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true
-    });
+    const course = await CourseR.updateCourse(req.body, req.params.id);
 
     if (!course) {
         return next(new ErrorResponse(`Course not found`, 404));
@@ -111,13 +92,13 @@ export const updateCourse = asyncHandler(async (req: Request, res: Response, nex
  * @access Private
  */
 export const deleteCourse = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const course = await Course.findById(req.params.id);
+    const course = await CourseR.fetchCourse(req.params.id);
 
     if (!course) {
         return next(new ErrorResponse(`Course not found`, 404));
     }
 
-    await course.deleteOne();
+    await CourseR.deleteCourse(course._id);
 
     res
         .status(200)

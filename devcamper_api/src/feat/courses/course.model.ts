@@ -1,7 +1,8 @@
-import {model, Schema, Types} from 'mongoose';
+import {Model, model, Schema, Types} from 'mongoose';
+import Bootcamp from "../bootcamps/bootcamp.model.ts";
 
 
-interface ICourse {
+export interface ICourse {
     title: string;
     description: string;
     weeks: number;
@@ -13,7 +14,11 @@ interface ICourse {
     // user: Types.ObjectId;
 }
 
-const courseSchema = new Schema<ICourse>({
+interface CourseModelType extends Model<ICourse> {
+    getAverageCost(bootcampId: Types.ObjectId): Promise<void>;
+}
+
+const courseSchema = new Schema<ICourse, CourseModelType>({
     title: {
         type: String,
         trim: true,
@@ -54,8 +59,29 @@ const courseSchema = new Schema<ICourse>({
     //     ref: 'User',
     //     required: true
     // }
-})
+}, {
+    statics: {
+        async getAverageCost(bootcampId) {
+            const obj = await this.aggregate([
+                {
+                    $match: {bootcamp: bootcampId},
+                },
+                {
+                    $group: {
+                        _id: '$bootcamp',
+                        averageCost: { $avg: '$tuition'}
+                    }
+                }
+            ]);
+            const newAverageCost = obj[0]?.averageCost;
 
-const Course = model<ICourse>('Course', courseSchema);
+            await Bootcamp.findByIdAndUpdate(bootcampId, {
+                averageCost: newAverageCost ?? null,
+            });
+        }
+    }
+});
+
+const Course = model<ICourse, CourseModelType>('Course', courseSchema);
 
 export default Course;
