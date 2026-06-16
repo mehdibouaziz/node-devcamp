@@ -62,7 +62,7 @@ const courseSchema = new Schema<ICourse, CourseModelType>({
 }, {
     statics: {
         async getAverageCost(bootcampId) {
-            const obj = await this.aggregate([
+            const aggregate = await this.aggregate([
                 {
                     $match: {bootcamp: bootcampId},
                 },
@@ -73,7 +73,7 @@ const courseSchema = new Schema<ICourse, CourseModelType>({
                     }
                 }
             ]);
-            const newAverageCost = obj[0]?.averageCost;
+            const newAverageCost = aggregate[0]?.averageCost;
 
             await Bootcamp.findByIdAndUpdate(bootcampId, {
                 averageCost: newAverageCost ?? null,
