@@ -121,3 +121,36 @@ export const getBootcampsInRadius = asyncHandler(async (req: Request, res: Respo
         data: bootcamps
     })
 })
+
+/**
+ * @desc Upload a photo for a bootcamp
+ * @route PUT /api/v1/bootcamps/:id/photo
+ * @access Private
+ */
+export const uploadPhoto = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const bootcamp = await BootcampR.fetchBootcamp(req.params.id);
+
+    if (!bootcamp) {
+        return next(new ErrorResponse(`Bootcamp not found`, 404));
+    }
+    if (!req.files) {
+        return next(new ErrorResponse(`Missing image`, 400));
+    }
+
+    const file = req.files.file;
+    if(!file || Array.isArray(file) || !file.mimetype.startsWith('image')) {
+        return next(new ErrorResponse(`Issue with image file`, 400));
+    }
+
+    const maxFileSize = +(process.env.FILE_UPLOAD_MAX_SIZE || 0);
+    if (file.size > maxFileSize) {
+        return next(new ErrorResponse(`File size exceeded. Max allowed: ${maxFileSize/1000000}mB`, 400));
+    }
+
+    await BootcampR.uploadPhoto(bootcamp._id, file, next);
+    res.status(200)
+        .json({
+            success: true,
+            data: file.name
+        });
+})

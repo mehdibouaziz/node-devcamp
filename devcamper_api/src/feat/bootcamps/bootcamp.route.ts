@@ -5,7 +5,7 @@ import {
     createBootcamp,
     updateBootcamp,
     deleteBootcamp,
-    getBootcampsInRadius
+    getBootcampsInRadius, uploadPhoto
 } from './bootcamp.controller.ts';
 import courseRouter from "../courses/course.route.ts"
 
@@ -22,6 +22,10 @@ router
 router
     .route('/radius')
     .get(getBootcampsInRadius);
+
+router
+    .route('/:id/photo')
+    .put(uploadPhoto)
 
 router
     .route('/:id')

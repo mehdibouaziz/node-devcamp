@@ -4,6 +4,11 @@ import log from "../../utils/niceConsole.ts";
 import Course from "../courses/course.model.ts";
 import slugify from "slugify";
 import geocoder from "../../middleware/geocoder.ts";
+import type {UploadedFile} from "express-fileupload";
+import {Types} from "mongoose";
+import * as path from "node:path";
+import type {NextFunction} from "express";
+import ErrorResponse from "../../utils/errorResponse.ts";
 
 
 const fetchBootcamps = async (reqQuery: ParsedQs) => {
@@ -113,11 +118,31 @@ const fetchBootcampsByRadius = async (reqQuery: ParsedQs) => {
     });
 }
 
+const uploadPhoto = async (bootcampId: Types.ObjectId, file: UploadedFile, next: NextFunction) => {
+    // create custom file name
+    file.name = `bootcamp_img_${bootcampId}_${path.parse(file.name).ext}`;
+
+    return file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async err => {
+        if (err) {
+            return next(new ErrorResponse(`Issue with file upload`, 500));
+        }
+
+        await Bootcamp.findByIdAndUpdate(bootcampId, {
+            photo: file.name,
+        }, {
+            new: true,
+            runValidators: true
+        });
+        return true;
+    });
+}
+
 export default {
     fetchBootcamps,
     fetchBootcamp,
     createBootcamp,
     updateBootcamp,
     deleteBootcamp,
-    fetchBootcampsByRadius
+    fetchBootcampsByRadius,
+    uploadPhoto,
 };
