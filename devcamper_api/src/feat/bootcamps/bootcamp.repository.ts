@@ -9,61 +9,18 @@ import {Types} from "mongoose";
 import * as path from "node:path";
 import type {NextFunction} from "express";
 import ErrorResponse from "../../utils/errorResponse.ts";
+import complexQuery from "../../utils/complexQuery.ts";
 
 
 const fetchBootcamps = async (reqQuery: ParsedQs) => {
 
-    // fields to exclude
-    const excludedKeys = ['select', 'sort', 'limit', 'page'];
-    const filteredQuery = {...reqQuery};
-    excludedKeys.forEach((key) => delete filteredQuery[key]);
-
-    // Format operators
-    const queryStr = JSON.stringify(filteredQuery).replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
-
-    // Final query
-    const query = Bootcamp.find(JSON.parse(queryStr));
-
-    // SELECT
-    if (reqQuery.select && typeof reqQuery.select === 'string') {
-        const selectKeys = reqQuery.select.split(',').join(' ');
-        query.select(selectKeys);
-    }
-
-    // SORT
-    if (reqQuery.sort && typeof reqQuery.sort === 'string') {
-        const sortFields = reqQuery.sort.split(',').join(' ');
-        log.text(reqQuery.sort)
-        query.sort(sortFields);
-    } else {
-        query.sort('-createdAt')
-    }
-
-
-    // PAGINATION
-    const page = (reqQuery.page && typeof reqQuery.page === 'string') ? parseInt(reqQuery.page, 10) : 1;
-    const limit = (reqQuery.limit && typeof reqQuery.limit === 'string') ? parseInt(reqQuery.limit, 10) : 25;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const total = await Bootcamp.countDocuments();
-    const pagination = {
-        ...(endIndex < total ? {next: {page: page + 1, limit}} : {}),
-        ...(startIndex > 0 ? {prev: {page: page - 1, limit}} : {}),
-    }
-
-    query.skip(startIndex).limit(limit);
-
-    // POPULATE
-    query.populate({
+    const {data, pagination} = await complexQuery(reqQuery, Bootcamp, {
         path: 'courses',
         select: 'name description'
     });
 
-    const bootcamps = await query;
-
     return {
-        bootcamps,
-        pagination
+        data, pagination
     };
 };
 

@@ -9,14 +9,14 @@ import asyncHandler from "../../middleware/asyncHandler.ts";
  * @access Public
  */
 export const getBootcamps = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const {bootcamps, pagination} = await BootcampR.fetchBootcamps(req.query);
+    const {data, pagination} = await BootcampR.fetchBootcamps(req.query);
 
     res
         .status(200)
         .json({
             success: true,
-            count: bootcamps.length,
-            data: bootcamps,
+            count: data.length,
+            data,
             pagination
         });
 })
@@ -39,7 +39,6 @@ export const getBootcamp = asyncHandler(async (req: Request, res: Response, next
             success: true,
             data: bootcamp
         });
-
 })
 
 /**
@@ -50,10 +49,12 @@ export const getBootcamp = asyncHandler(async (req: Request, res: Response, next
 export const createBootcamp = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const bootcamp = await BootcampR.createBootcamp(req.body);
 
-    res.status(201).json({
-        success: true,
-        data: bootcamp,
-    })
+    res
+        .status(201)
+        .json({
+            success: true,
+            data: bootcamp,
+        });
 })
 
 /**
@@ -115,11 +116,13 @@ export const getBootcampsInRadius = asyncHandler(async (req: Request, res: Respo
 
     const bootcamps = await BootcampR.fetchBootcampsByRadius(req.query);
 
-    res.status(200).json({
-        success: true,
-        count: bootcamps.length,
-        data: bootcamps
-    })
+    res
+        .status(200)
+        .json({
+            success: true,
+            count: bootcamps.length,
+            data: bootcamps
+        });
 })
 
 /**
@@ -138,17 +141,18 @@ export const uploadPhoto = asyncHandler(async (req: Request, res: Response, next
     }
 
     const file = req.files.file;
-    if(!file || Array.isArray(file) || !file.mimetype.startsWith('image')) {
+    if (!file || Array.isArray(file) || !file.mimetype.startsWith('image')) {
         return next(new ErrorResponse(`Issue with image file`, 400));
     }
 
     const maxFileSize = +(process.env.FILE_UPLOAD_MAX_SIZE || 0);
     if (file.size > maxFileSize) {
-        return next(new ErrorResponse(`File size exceeded. Max allowed: ${maxFileSize/1000000}mB`, 400));
+        return next(new ErrorResponse(`File size exceeded. Max allowed: ${maxFileSize / 1000000}mB`, 400));
     }
 
     await BootcampR.uploadPhoto(bootcamp._id, file, next);
-    res.status(200)
+    res
+        .status(200)
         .json({
             success: true,
             data: file.name
