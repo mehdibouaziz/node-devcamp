@@ -63,8 +63,8 @@ async function complexQuery<M extends Model<any>>(
     const data = await query as QueryResult<M>;
 
     return {
-        data,
         count: data.length,
+        data,
         pagination
     }
 }
