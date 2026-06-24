@@ -1,15 +1,17 @@
 import Course, {type ICourse} from "./course.model.ts";
 import {Types} from "mongoose";
+import complexQuery from "../../utils/complexQuery.ts";
+import type {ParsedQs} from "qs";
 
-const fetchCourses = async (bootcampId?: Types.ObjectId) => {
-    if (bootcampId) {
-        return Course.find({ bootcamp: bootcampId });
-    } else {
-        return Course.find().populate({
-            path: 'bootcamp',
-            select: 'name description',
-        });
-    }
+const fetchCourses = async (reqQuery: ParsedQs) => {
+    return await complexQuery(reqQuery, Course, {
+        path: 'bootcamp',
+        select: 'name description',
+    });
+}
+
+const fetchCoursesById = async (bootcampId: Types.ObjectId)=> {
+    return Course.find({ bootcamp: bootcampId });
 }
 
 const fetchCourse = async (id?: string|string[]) => {
@@ -49,6 +51,7 @@ const deleteCourse = async (id: Types.ObjectId) => {
 
 export default {
     fetchCourses,
+    fetchCoursesById,
     fetchCourse,
     createCourse,
     updateCourse,

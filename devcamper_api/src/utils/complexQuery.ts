@@ -4,14 +4,17 @@ import type {ParsedQs} from "qs";
 type QueryResult<M extends Model<any>> =
     Awaited<ReturnType<M['find']>>;
 
+export type complexQueryResults<M extends Model<any>> = {
+    data: QueryResult<M>;
+    count: number;
+    pagination: Record<string, any>;
+}
+
 async function complexQuery<M extends Model<any>>(
     reqQ: ParsedQs,
     model: M,
     populate?: PopulateOptions
-): Promise<{
-    data: QueryResult<M>;
-    pagination: Record<string, any>;
-}> {
+): Promise<complexQueryResults<M>> {
     const reqQuery = {...reqQ};
 
     // fields to exclude
@@ -61,6 +64,7 @@ async function complexQuery<M extends Model<any>>(
 
     return {
         data,
+        count: data.length,
         pagination
     }
 }

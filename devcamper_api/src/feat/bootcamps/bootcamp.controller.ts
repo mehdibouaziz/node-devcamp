@@ -9,15 +9,13 @@ import asyncHandler from "../../middleware/asyncHandler.ts";
  * @access Public
  */
 export const getBootcamps = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const {data, pagination} = await BootcampR.fetchBootcamps(req.query);
+    const results = await BootcampR.fetchBootcamps(req.query);
 
     res
         .status(200)
         .json({
             success: true,
-            count: data.length,
-            data,
-            pagination
+            ...results
         });
 })
 

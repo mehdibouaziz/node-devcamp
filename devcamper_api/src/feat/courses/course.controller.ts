@@ -12,19 +12,30 @@ import ErrorResponse from "../../utils/errorResponse.ts";
  */
 export const getCourses = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const bootcamp = await BootcampR.fetchBootcamp(req.params.bootcampId);
+
     if (req.params.bootcampId && !bootcamp) {
         return next(new ErrorResponse(`Bootcamp not found`, 404));
     }
+    const bootcampId = bootcamp?._id;
 
-    const courses = await CourseR.fetchCourses(bootcamp?._id);
-
-    res
-        .status(200)
-        .json({
-            success: true,
-            count: courses.length,
-            data: courses,
-        });
+    if(bootcampId) {
+        const courses = await CourseR.fetchCoursesById(bootcampId);
+        res
+            .status(200)
+            .json({
+                success: true,
+                count: courses.length,
+                data: courses,
+            });
+    } else {
+        const results = await CourseR.fetchCourses(req.query);
+        res
+            .status(200)
+            .json({
+                success: true,
+                ...results
+            });
+    }
 });
 
 /**

@@ -14,7 +14,7 @@ export interface ICourse {
     // user: Types.ObjectId;
 }
 
-interface CourseModelType extends Model<ICourse> {
+export interface CourseModelType extends Model<ICourse> {
     getAverageCost(bootcampId: Types.ObjectId): Promise<void>;
 }
 

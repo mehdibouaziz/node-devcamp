@@ -13,15 +13,10 @@ import complexQuery from "../../utils/complexQuery.ts";
 
 
 const fetchBootcamps = async (reqQuery: ParsedQs) => {
-
-    const {data, pagination} = await complexQuery(reqQuery, Bootcamp, {
+    return await complexQuery(reqQuery, Bootcamp, {
         path: 'courses',
         select: 'name description'
     });
-
-    return {
-        data, pagination
-    };
 };
 
 const fetchBootcamp = async (id?: string|string[]) => {
