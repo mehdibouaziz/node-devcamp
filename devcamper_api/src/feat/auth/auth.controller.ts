@@ -2,7 +2,6 @@ import type {Request, Response, NextFunction} from 'express';
 import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import UserRepository from "../users/user.repository.ts";
-import bcrypt from "bcryptjs";
 
 
 /**
@@ -19,12 +18,17 @@ export const registerUser = asyncHandler(async (req: Request, res: Response, nex
         password,
         role
     });
+    if (!user) {
+        return next(new ErrorResponse(`Error with user creation`, 500));
+    }
+
+    const token = user.getSignedJwtToken()
 
     res.status(200).json({
         status: true,
         json: {
             success: true,
-            data: user,
+            token
         },
     });
 });

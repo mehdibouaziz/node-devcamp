@@ -1,4 +1,7 @@
-import {model, Schema} from 'mongoose';
+import {type Model, model, Schema} from 'mongoose';
+import jwt from 'jsonwebtoken';
+import {getEnv} from "../../utils/getEnv.ts";
+import type {StringValue} from "ms";
 
 export interface IUser {
     name: string,
@@ -10,7 +13,11 @@ export interface IUser {
     createdAt?: string
 }
 
-const UserSchema = new Schema<IUser>({
+export interface UserMethods {
+    getSignedJwtToken(): string;
+}
+
+const UserSchema = new Schema<IUser, Model<IUser>, UserMethods>({
     name: {
         type: String,
         required: [true, 'Please add a name']
@@ -42,6 +49,13 @@ const UserSchema = new Schema<IUser>({
     },
 });
 
-const User = model<IUser>('User', UserSchema);
+UserSchema.method('getSignedJwtToken', function getSignedJwtToken() {
+    return jwt.sign(
+        {id: this._id},
+        getEnv('JWT_SECRET'),
+        {expiresIn: getEnv('JWT_EXPIRE') as StringValue})
+});
+
+const User = model('User', UserSchema);
 
 export default User;

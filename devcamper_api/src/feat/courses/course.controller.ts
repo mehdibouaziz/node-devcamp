@@ -19,7 +19,7 @@ export const getCourses = asyncHandler(async (req: Request, res: Response, next:
     const bootcampId = bootcamp?._id;
 
     if(bootcampId) {
-        const courses = await CourseR.fetchCoursesById(bootcampId);
+        const courses = await CourseR.fetchCoursesByBootcamp(bootcampId);
         res
             .status(200)
             .json({

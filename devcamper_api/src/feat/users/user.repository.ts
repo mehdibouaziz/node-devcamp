@@ -1,6 +1,18 @@
 import User, {type IUser} from "./user.model.ts";
 import bcrypt from "bcryptjs";
 import {Types} from "mongoose";
+import type {ParsedQs} from "qs";
+import complexQuery from "../../utils/complexQuery.ts";
+
+
+const fetchUsers = async (reqQuery: ParsedQs) => {
+    return await complexQuery(reqQuery, User);
+}
+
+const fetchUser = async (id?: string | string[]) => {
+    return User.findById(id)
+    // todo add populate?
+}
 
 const createUser = async (body: IUser) => {
     const {password, ...rest} = body;
@@ -13,7 +25,7 @@ const createUser = async (body: IUser) => {
     await user.save();
 
     // avoid returning restricted fields (eg password)
-    return User.find(user._id);
+    return User.findOne(user._id);
 }
 
 const createUsers = async (users: IUser[]) => {
@@ -31,6 +43,8 @@ const deleteUser = async (id: Types.ObjectId) => {
 }
 
 export default {
+    fetchUsers,
+    fetchUser,
     createUser,
     createUsers,
     deleteUser,
