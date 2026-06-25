@@ -14,6 +14,17 @@ const fetchUser = async (id?: string | string[]) => {
     // todo add populate?
 }
 
+const getUserByEmail = async (email: string, withPassword: boolean = false) => {
+    const query = User.findOne({
+        email
+    });
+    if(withPassword){
+        query.select("+password");
+    }
+
+    return query;
+}
+
 const createUser = async (body: IUser) => {
     const {password, ...rest} = body;
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
@@ -45,6 +56,7 @@ const deleteUser = async (id: Types.ObjectId) => {
 export default {
     fetchUsers,
     fetchUser,
+    getUserByEmail,
     createUser,
     createUsers,
     deleteUser,

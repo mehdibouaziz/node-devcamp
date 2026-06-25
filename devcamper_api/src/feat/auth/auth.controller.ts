@@ -32,3 +32,39 @@ export const registerUser = asyncHandler(async (req: Request, res: Response, nex
         },
     });
 });
+
+/**
+ * @desc Log in user
+ * @route POST /api/v1/auth/login
+ * @access Private
+ */
+export const loginUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const {email, password} = req.body;
+
+    if (!email || !password) {
+        return next(new ErrorResponse(`Please provide an email and password`, 400));
+    }
+
+    const user = await UserRepository.getUserByEmail(email, true);
+    if (!user) {
+        return next(new ErrorResponse(`Invalid credentials`, 401));
+    }
+
+    const passwordValid = await user.verifyPassword(password);
+    if (!passwordValid) {
+        return next(new ErrorResponse(`Invalid credentials`, 401));
+    }
+
+    const token = user.getSignedJwtToken()
+
+
+    res
+        .status(200)
+        .json({
+            status: true,
+            json: {
+                success: true,
+                token
+            },
+        });
+});
