@@ -32,7 +32,7 @@ export interface IBootcamp {
     // user: ????
 }
 
-const bootcampSchema = new Schema<IBootcamp>({
+const BootcampSchema = new Schema<IBootcamp>({
         name: {
             type: String,
             required: [true, 'Please add a name'],
@@ -141,13 +141,13 @@ const bootcampSchema = new Schema<IBootcamp>({
 
 
 // populate courses
-bootcampSchema.virtual('courses', {
+BootcampSchema.virtual('courses', {
     ref: 'Course',
     localField: '_id',
     foreignField: 'bootcamp',
     justOne: false
 })
 
-const Bootcamp = model<IBootcamp>('Bootcamp', bootcampSchema);
+const Bootcamp = model<IBootcamp>('Bootcamp', BootcampSchema);
 
 export default Bootcamp;

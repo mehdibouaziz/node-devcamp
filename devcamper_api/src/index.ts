@@ -4,10 +4,12 @@ import fileUpload from 'express-fileupload';
 
 import bootcampsRouter from './feat/bootcamps/bootcamp.route.ts';
 import coursesRouter from './feat/courses/course.route.ts';
+import authRouter from './feat/auth/auth.route.ts';
 import errorHandler from './middleware/error.ts';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import log from "./utils/niceConsole.ts";
+import authRoute from "./feat/auth/auth.route.ts";
 
 
 const app = express();
@@ -30,6 +32,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, '../public')));
 
 // routers
+app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/bootcamps', bootcampsRouter);
 app.use('/api/v1/courses', coursesRouter);
 

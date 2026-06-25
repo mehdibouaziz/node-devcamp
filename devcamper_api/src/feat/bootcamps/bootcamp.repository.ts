@@ -36,6 +36,12 @@ const createBootcamp = async (body: IBootcamp) => {
     return bootcamp.save();
 }
 
+const createBootcamps = async (bootcamps: IBootcamp[]) => {
+    for (const bootcamp of bootcamps) {
+        await createBootcamp(bootcamp);
+    }
+}
+
 const updateBootcamp = async (data: IBootcamp, id?: string|string[]) => {
     return Bootcamp.findByIdAndUpdate(id, data, {
         new: true,
@@ -93,6 +99,7 @@ export default {
     fetchBootcamps,
     fetchBootcamp,
     createBootcamp,
+    createBootcamps,
     updateBootcamp,
     deleteBootcamp,
     fetchBootcampsByRadius,

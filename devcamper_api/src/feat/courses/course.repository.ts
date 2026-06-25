@@ -21,7 +21,7 @@ const fetchCourse = async (id?: string|string[]) => {
     });
 }
 
-const createCourse = async (body: ICourse, bootcampId: Types.ObjectId) => {
+const createCourse = async (body: Partial<ICourse>, bootcampId: Types.ObjectId) => {
     const data = {
         ...body,
         bootcamp: bootcampId,
@@ -30,6 +30,12 @@ const createCourse = async (body: ICourse, bootcampId: Types.ObjectId) => {
     await course.save();
     await Course.getAverageCost(course.bootcamp);
     return course;
+}
+
+const createCourses = async (courses: ICourse[]) => {
+    for (const course of courses) {
+        await createCourse(course, course.bootcamp);
+    }
 }
 
 const updateCourse = async (data: ICourse, id?: string|string[]) => {
@@ -54,6 +60,7 @@ export default {
     fetchCoursesById,
     fetchCourse,
     createCourse,
+    createCourses,
     updateCourse,
     deleteCourse
 }
