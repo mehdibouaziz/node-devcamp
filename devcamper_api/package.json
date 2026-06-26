@@ -12,11 +12,13 @@
     "seeder": "ts-node db/seeder.ts"
   },
   "dependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "@types/geojson": "^7946.0.16",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "bcryptjs": "^3.0.3",
     "chalk": "^5.6.2",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-fileupload": "^1.5.2",

@@ -1,4 +1,4 @@
-import User, {type IUser} from "./user.model.ts";
+import User, {type IUserDocument} from "./user.model.ts";
 import bcrypt from "bcryptjs";
 import {Types} from "mongoose";
 import type {ParsedQs} from "qs";
@@ -25,7 +25,7 @@ const getUserByEmail = async (email: string, withPassword: boolean = false) => {
     return query;
 }
 
-const createUser = async (body: IUser) => {
+const createUser = async (body: IUserDocument) => {
     const {password, ...rest} = body;
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
@@ -39,7 +39,7 @@ const createUser = async (body: IUser) => {
     return User.findOne(user._id);
 }
 
-const createUsers = async (users: IUser[]) => {
+const createUsers = async (users: IUserDocument[]) => {
     for (const user of users) {
         await createUser(user);
     }

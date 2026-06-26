@@ -2,6 +2,7 @@ import type {Request, Response, NextFunction} from 'express';
 import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import UserRepository from "../users/user.repository.ts";
+import {sendTokenResponse} from "./utils.ts";
 
 
 /**
@@ -22,15 +23,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response, nex
         return next(new ErrorResponse(`Error with user creation`, 500));
     }
 
-    const token = user.getSignedJwtToken()
-
-    res.status(200).json({
-        status: true,
-        json: {
-            success: true,
-            token
-        },
-    });
+    sendTokenResponse(user, 200, res)
 });
 
 /**
@@ -55,16 +48,5 @@ export const loginUser = asyncHandler(async (req: Request, res: Response, next: 
         return next(new ErrorResponse(`Invalid credentials`, 401));
     }
 
-    const token = user.getSignedJwtToken()
-
-
-    res
-        .status(200)
-        .json({
-            status: true,
-            json: {
-                success: true,
-                token
-            },
-        });
+    sendTokenResponse(user, 200, res);
 });

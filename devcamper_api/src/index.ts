@@ -1,15 +1,15 @@
 import express from 'express';
 import morgan from "morgan";
 import fileUpload from 'express-fileupload';
-
+import path from 'path';
+import {fileURLToPath} from 'url';
+import cookieParser from "cookie-parser";
+//routers
 import bootcampsRouter from './feat/bootcamps/bootcamp.route.ts';
 import coursesRouter from './feat/courses/course.route.ts';
 import authRouter from './feat/auth/auth.route.ts';
+// utils
 import errorHandler from './middleware/error.ts';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import log from "./utils/niceConsole.ts";
-import authRoute from "./feat/auth/auth.route.ts";
 
 
 const app = express();
@@ -18,6 +18,9 @@ app.set('query parser', 'extended');
 
 // middleware
 app.use(express.json());
+
+// cookies middleware
+app.use(cookieParser());
 
 // logger middleware
 if (process.env.NODE_ENV !== "production") {

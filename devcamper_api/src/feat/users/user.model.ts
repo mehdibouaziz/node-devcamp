@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import {getEnv} from "../../utils/getEnv.ts";
 import type {StringValue} from "ms";
 import bcrypt from "bcryptjs";
-import log from "../../utils/niceConsole.ts";
 
-export interface IUser {
+// add properties here
+export interface IUserDocument {
     name: string,
     email: string,
     role?: string,
@@ -15,12 +15,16 @@ export interface IUser {
     createdAt?: string
 }
 
-export interface UserMethods {
+// add methods here
+export interface IUser extends IUserDocument {
     getSignedJwtToken(): string;
     verifyPassword(passwordToCheck: string): Promise<boolean>;
 }
 
-const UserSchema = new Schema<IUser, Model<IUser>, UserMethods>({
+// add statics here
+export interface IUserModel extends Model<IUser> {}
+
+const UserSchema = new Schema({
     name: {
         type: String,
         required: [true, 'Please add a name']
@@ -71,6 +75,6 @@ UserSchema.method('verifyPassword', async function verifyPassword(passwordToChec
 });
 
 // MODEL
-const User = model('User', UserSchema);
+const User: IUserModel = model<IUser, IUserModel>('User', UserSchema);
 
 export default User;
