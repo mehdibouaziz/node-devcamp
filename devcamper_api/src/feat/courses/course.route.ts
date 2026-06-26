@@ -5,19 +5,20 @@ import {
     getCourses,
     updateCourse
 } from "./course.controller.ts";
+import {protect} from "../../middleware/auth.ts";
 
 const router = express.Router({mergeParams: true});
 
 router
     .route("/")
     .get(getCourses)
-    .post(createCourse);
+    .post(protect, createCourse);
 
 router
     .route('/:id')
     .get(getCourse)
-    .put(updateCourse)
-    .delete(deleteCourse);
+    .put(protect, updateCourse)
+    .delete(protect, deleteCourse);
 
 
 export default router;

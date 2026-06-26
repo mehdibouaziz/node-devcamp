@@ -5,11 +5,13 @@ import {MongoError} from "mongodb";
 import {Error} from "mongoose";
 
 
-const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (err: Error | ErrorResponse, req: Request, res: Response, next: NextFunction) => {
     // log to console for dev
     console.log(chalk.red(err.stack));
 
-    const error = new ErrorResponse(err.message, 500, err.stack);
+    const statusCode = (err instanceof ErrorResponse) ? err.statusCode : 500;
+
+    const error = new ErrorResponse(err.message, statusCode, err.stack);
 
     // mongoose bad objectId
     if(err.name === "CastError") {

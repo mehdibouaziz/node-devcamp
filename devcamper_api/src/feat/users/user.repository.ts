@@ -5,11 +5,11 @@ import type {ParsedQs} from "qs";
 import complexQuery from "../../utils/complexQuery.ts";
 
 
-const fetchUsers = async (reqQuery: ParsedQs) => {
+const getUsers = async (reqQuery: ParsedQs) => {
     return await complexQuery(reqQuery, User);
 }
 
-const fetchUser = async (id?: string | string[]) => {
+const getUser = async (id?: string | string[]) => {
     return User.findById(id)
     // todo add populate?
 }
@@ -54,8 +54,8 @@ const deleteUser = async (id: Types.ObjectId) => {
 }
 
 export default {
-    fetchUsers,
-    fetchUser,
+    getUsers,
+    getUser,
     getUserByEmail,
     createUser,
     createUsers,

@@ -1,5 +1,5 @@
 class ErrorResponse extends Error {
-    statusCode : number;
+    statusCode: number;
     stack: string;
 
     constructor(message: string = 'Server Error', statusCode: number = 500, stack?: string) {

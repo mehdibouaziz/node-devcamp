@@ -9,6 +9,7 @@ export const sendTokenResponse = (user: HydratedDocument<IUser>, statusCode: num
     const options = {
         expires: new Date(Date.now() + (+getEnv('JWT_COOKIE_EXPIRE') * 24 * 60 * 60 * 1000)),
         httpOnly: true,
+        ...(getEnv('NODE_ENV') === 'production' ? {secure: true} : {}),
     };
 
     res
