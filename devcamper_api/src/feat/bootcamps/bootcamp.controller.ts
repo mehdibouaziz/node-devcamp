@@ -2,6 +2,8 @@ import type {Request, Response, NextFunction} from 'express';
 import BootcampR from "./bootcamp.repository.ts";
 import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
+import type {IUser} from "../users/user.model.ts";
+import type {HydratedDocument} from "mongoose";
 
 /**
  * @desc Get all bootcamps
@@ -45,7 +47,21 @@ export const getBootcamp = asyncHandler(async (req: Request, res: Response, next
  * @access Private
  */
 export const createBootcamp = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const bootcamp = await BootcampR.createBootcamp(req.body);
+    const user = res.locals.user as HydratedDocument<IUser>|null|undefined;
+    if(!user) {return;}
+
+    // find if user has already published bootcamps (only admins can publish >1)
+    if(user.role !== 'admin') {
+        const publishedBootcamp = await BootcampR.getBootcampByUser(user._id);
+        if (publishedBootcamp) {
+            return next(new ErrorResponse(`User has already published a bootcamp`, 400));
+        }
+    }
+
+    const bootcamp = await BootcampR.createBootcamp({
+        ...req.body,
+        user: user._id,
+    });
 
     res
         .status(201)

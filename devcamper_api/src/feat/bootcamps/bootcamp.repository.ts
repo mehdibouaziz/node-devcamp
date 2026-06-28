@@ -26,6 +26,12 @@ const fetchBootcamp = async (id?: string|string[]) => {
     });
 }
 
+const getBootcampByUser = async (userId: Types.ObjectId) => {
+    return Bootcamp.find({
+        user: userId,
+    })
+}
+
 const createBootcamp = async (body: IBootcamp) => {
     const data = {
         ...body,
@@ -98,6 +104,7 @@ const uploadPhoto = async (bootcampId: Types.ObjectId, file: UploadedFile, next:
 export default {
     fetchBootcamps,
     fetchBootcamp,
+    getBootcampByUser,
     createBootcamp,
     createBootcamps,
     updateBootcamp,

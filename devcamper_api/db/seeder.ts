@@ -80,7 +80,7 @@ if (!mode) {
             mode = '--wipe';
             break;
         case "clean":
-        case "CS":
+        case "C":
             mode = '--clean';
             break;
         default:
