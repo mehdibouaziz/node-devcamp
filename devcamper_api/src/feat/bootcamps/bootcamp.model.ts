@@ -1,35 +1,35 @@
-import {model, Schema} from 'mongoose';
+import {model, Schema, Types} from 'mongoose';
 
 export type BootcampLocation = {
-    type: 'Point',
-    coordinates: number[],
-    formattedAddress?: string,
-    street?: string,
-    city?: string,
-    state?: string,
-    zipcode?: string,
-    country?: string
+    type: 'Point';
+    coordinates: number[];
+    formattedAddress?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    zipcode?: string;
+    country?: string;
 }
 
 export interface IBootcamp {
-    name: string,
-    slug?: string,
-    description: string,
-    website?: string,
-    phone?: string,
-    email?: string,
-    address: string,
-    location?: BootcampLocation,
-    careers: string[],
-    averageRating?: number,
-    averageCost?: number,
-    photo?: string,
-    housing?: boolean,
-    jobAssistance?: boolean,
-    jobGuarantee?: boolean,
-    acceptGi?: boolean,
-    createdAt?: string,
-    // user: ????
+    name: string;
+    slug?: string;
+    description: string;
+    website?: string;
+    phone?: string;
+    email?: string;
+    address: string;
+    location?: BootcampLocation;
+    careers: string[];
+    averageRating?: number;
+    averageCost?: number;
+    photo?: string;
+    housing?: boolean;
+    jobAssistance?: boolean;
+    jobGuarantee?: boolean;
+    acceptGi?: boolean;
+    createdAt?: string;
+    user: Types.ObjectId;
 }
 
 const BootcampSchema = new Schema<IBootcamp>({
@@ -128,11 +128,11 @@ const BootcampSchema = new Schema<IBootcamp>({
             type: Date,
             default: Date.now
         },
-        // user: {
-        //     type: mongoose.Schema.ObjectId,
-        //     ref: 'User',
-        //     required: true
-        // }
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        }
     },
     {
         toJSON: {virtuals: true},

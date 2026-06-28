@@ -11,7 +11,7 @@ export interface ICourse {
     scholarshipsAvailable: boolean;
     createdAt?: string;
     bootcamp: Types.ObjectId;
-    // user: Types.ObjectId;
+    user: Types.ObjectId;
 }
 
 export interface CourseModelType extends Model<ICourse> {
@@ -54,11 +54,11 @@ const courseSchema = new Schema<ICourse, CourseModelType>({
         ref: 'Bootcamp',
         required: true
     },
-    // user: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'User',
-    //     required: true
-    // }
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 }, {
     statics: {
         async getAverageCost(bootcampId) {

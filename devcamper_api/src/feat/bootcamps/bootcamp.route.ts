@@ -8,7 +8,7 @@ import {
     getBootcampsInRadius, uploadPhoto
 } from './bootcamp.controller.ts';
 import courseRouter from "../courses/course.route.ts";
-import {protect} from "../../middleware/auth.ts";
+import {authorizeRole, protect} from "../../middleware/auth.ts";
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.use('/:bootcampId/courses', courseRouter);
 router
     .route('/')
     .get(getBootcamps)
-    .post(protect, createBootcamp);
+    .post(protect, authorizeRole('publisher', 'admin'), createBootcamp);
 
 router
     .route('/radius')
@@ -26,13 +26,13 @@ router
 
 router
     .route('/:id/photo')
-    .put(protect, uploadPhoto)
+    .put(protect, authorizeRole('publisher', 'admin'), uploadPhoto)
 
 router
     .route('/:id')
     .get(getBootcamp)
-    .put(protect, updateBootcamp)
-    .delete(protect, deleteBootcamp);
+    .put(protect, authorizeRole('publisher', 'admin'), updateBootcamp)
+    .delete(protect, authorizeRole('publisher', 'admin'), deleteBootcamp);
 
 
 export default router;

@@ -30,3 +30,18 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
         return next(new ErrorResponse(`Not authorized`, 401));
     }
 });
+
+// grant access to specific roles
+export const authorizeRole = (...roles: string []) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if(!res.locals.user){
+            return next(new ErrorResponse(`Not authorized`, 401));
+        }
+
+        if(!roles.includes(res.locals.user.role)) {
+            return next(new ErrorResponse(`Unauthorized access for users of role: ${res.locals.user.role}`, 403));
+        }
+        
+        next();
+    }
+}
