@@ -3,6 +3,8 @@ import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import UserRepository from "../users/user.repository.ts";
 import {sendTokenResponse} from "./utils.ts";
+import * as crypto from "node:crypto";
+import userRepository from "../users/user.repository.ts";
 
 
 /**
@@ -12,6 +14,10 @@ import {sendTokenResponse} from "./utils.ts";
  */
 export const registerUser = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const {name, email, password, role} = req.body;
+
+    if(!password || password.length < 6) {
+        return next(new ErrorResponse(`Invalid password: min length 6 chars`, 400));
+    }
 
     const user = await UserRepository.createUser({
         name,
@@ -53,7 +59,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response, next: 
 
 /**
  * @desc Get current logged-in user
- * @route POST /api/v1/auth/me
+ * @route GET /api/v1/auth/me
  * @access Private
  */
 export const getMe = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -68,4 +74,64 @@ export const getMe = asyncHandler(async (req: Request, res: Response, next: Next
             success: true,
             data: user
         });
+});
+
+/**
+ * @desc Forgot password
+ * @route POST /api/v1/auth/forgotpassword
+ * @access Public
+ */
+export const forgotPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user = await UserRepository.getUserByEmail(req.body.email);
+
+    if (!user) {
+        return next(new ErrorResponse(`Invalid credentials`, 401));
+    }
+
+    // Get reset token
+    const resetToken = user.getResetPasswordToken();
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/resetpassword/${resetToken}`;
+
+    res
+        .status(200)
+        .json({
+            success: true,
+            data: {
+                resetUrl,
+                resetToken
+            }
+        });
+});
+
+/**
+ * @desc Reset password
+ * @route PUT /api/v1/auth/resetpassword/:resetToken
+ * @access Public
+ */
+export const resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    if(!req.body.password || req.body.password.length < 6) {
+        return next(new ErrorResponse(`Invalid password: min length 6 chars`, 400));
+    }
+
+    const token = req.params.resetToken as string;
+    const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await UserRepository.getOneUserByFields({
+        resetPasswordToken,
+    })
+
+    if (!user) {
+        return next(new ErrorResponse(`Invalid token`, 400));
+    }
+    if(!user.resetPasswordExpire || user.resetPasswordExpire.valueOf() < Date.now()) {
+        return next(new ErrorResponse(`Expired token`, 400));
+    }
+
+    const updatedUser = await userRepository.resetPassword(user._id, req.body.password);
+
+    if (!updatedUser) {
+        return next(new ErrorResponse(`Password update error`, 500));
+    }
+
+    sendTokenResponse(updatedUser, 200, res);
 });

@@ -14,6 +14,10 @@ const getUser = async (id?: string | string[]) => {
     // todo add populate?
 }
 
+const getOneUserByFields = async (userFields: Partial<IUserDocument>) => {
+    return User.findOne({...userFields});
+}
+
 const getUserByEmail = async (email: string, withPassword: boolean = false) => {
     const query = User.findOne({
         email
@@ -45,6 +49,26 @@ const createUsers = async (users: IUserDocument[]) => {
     }
 }
 
+const updateUser = async (id: Types.ObjectId, body: Partial<IUserDocument>) => {
+    return User.findByIdAndUpdate(id, body, {
+        new: true,
+        runValidators: true
+    });
+}
+
+const resetPassword = async (id: Types.ObjectId, password: string) => {
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+
+    return User.findByIdAndUpdate(id, {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpire: null,
+    }, {
+        new: true,
+        runValidators: true
+    });
+}
+
 const deleteUser = async (id: Types.ObjectId) => {
     const user = User.find(id);
     if (!user) {
@@ -56,8 +80,11 @@ const deleteUser = async (id: Types.ObjectId) => {
 export default {
     getUsers,
     getUser,
+    getOneUserByFields,
     getUserByEmail,
     createUser,
     createUsers,
+    updateUser,
+    resetPassword,
     deleteUser,
 }

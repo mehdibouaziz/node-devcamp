@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import {getEnv} from "../../utils/getEnv.ts";
 import type {StringValue} from "ms";
 import bcrypt from "bcryptjs";
+import * as crypto from "node:crypto";
 
 // add properties here
 export interface IUserDocument {
@@ -19,6 +20,7 @@ export interface IUserDocument {
 export interface IUser extends IUserDocument {
     getSignedJwtToken(): string;
     verifyPassword(passwordToCheck: string): Promise<boolean>;
+    getResetPasswordToken(): string;
 }
 
 // add statics here
@@ -72,6 +74,15 @@ UserSchema.method('verifyPassword', async function verifyPassword(passwordToChec
         return await bcrypt.compare(passwordToCheck, hash);
     }
     return await bcrypt.compare(passwordToCheck, this.password);
+});
+
+UserSchema.method('getResetPasswordToken', function getResetPasswordToken() {
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    this.resetPasswordExpire = new Date(Date.now() + 10*60*1000);
+    this.save();
+
+    return resetToken;
 });
 
 // MODEL
