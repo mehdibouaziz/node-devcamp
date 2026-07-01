@@ -4,11 +4,10 @@ import asyncHandler from "../../middleware/asyncHandler.ts";
 import UserRepository from "../users/user.repository.ts";
 import {sendTokenResponse} from "./utils.ts";
 import * as crypto from "node:crypto";
-import userRepository from "../users/user.repository.ts";
 
 
 /**
- * @desc Register user
+ * @desc Register new user
  * @route POST /api/v1/auth/register
  * @access Public
  */
@@ -29,7 +28,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response, nex
         return next(new ErrorResponse(`Error with user creation`, 500));
     }
 
-    sendTokenResponse(user, 200, res)
+    sendTokenResponse(user, 201, res)
 });
 
 /**
@@ -77,7 +76,30 @@ export const getMe = asyncHandler(async (req: Request, res: Response, next: Next
 });
 
 /**
- * @desc Forgot password
+ * @desc Update logged-in user password
+ * @route PUT /api/v1/auth/updatepassword
+ * @access Private
+ */
+export const updatePassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const user = res.locals.user;
+    if (!user) {
+        return next(new ErrorResponse(`Invalid credentials`, 401));
+    }
+    if(!req.body.password || req.body.password.length < 6) {
+        return next(new ErrorResponse(`Invalid password: min length 6 chars`, 400));
+    }
+
+    const updatedUser = await UserRepository.resetPassword(user._id, req.body.password);
+
+    if (!updatedUser) {
+        return next(new ErrorResponse(`Password update error`, 500));
+    }
+
+    sendTokenResponse(updatedUser, 200, res);
+});
+
+/**
+ * @desc Request a token to reset a user password
  * @route POST /api/v1/auth/forgotpassword
  * @access Public
  */
@@ -104,7 +126,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response, n
 });
 
 /**
- * @desc Reset password
+ * @desc Reset password with reset token
  * @route PUT /api/v1/auth/resetpassword/:resetToken
  * @access Public
  */
@@ -127,7 +149,7 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response, ne
         return next(new ErrorResponse(`Expired token`, 400));
     }
 
-    const updatedUser = await userRepository.resetPassword(user._id, req.body.password);
+    const updatedUser = await UserRepository.resetPassword(user._id, req.body.password);
 
     if (!updatedUser) {
         return next(new ErrorResponse(`Password update error`, 500));

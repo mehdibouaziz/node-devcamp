@@ -50,7 +50,12 @@ const createUsers = async (users: IUserDocument[]) => {
 }
 
 const updateUser = async (id: Types.ObjectId, body: Partial<IUserDocument>) => {
-    return User.findByIdAndUpdate(id, body, {
+    const {name, email} = body;
+
+    return User.findByIdAndUpdate(id, {
+        name,
+        email,
+    }, {
         new: true,
         runValidators: true
     });
