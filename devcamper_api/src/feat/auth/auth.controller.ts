@@ -81,15 +81,23 @@ export const getMe = asyncHandler(async (req: Request, res: Response, next: Next
  * @access Private
  */
 export const updatePassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const user = res.locals.user;
-    if (!user) {
+    const user = await UserRepository.getUser(res.locals.user._id);
+    const {currentPassword, newPassword} = req.body;
+
+    if (!user || !currentPassword) {
         return next(new ErrorResponse(`Invalid credentials`, 401));
     }
-    if(!req.body.password || req.body.password.length < 6) {
+
+    const passwordCheck = await user.verifyPassword(currentPassword);
+    if (!passwordCheck) {
+        return next(new ErrorResponse(`Invalid credentials`, 401));
+    }
+
+    if(!newPassword || newPassword.length < 6) {
         return next(new ErrorResponse(`Invalid password: min length 6 chars`, 400));
     }
 
-    const updatedUser = await UserRepository.resetPassword(user._id, req.body.password);
+    const updatedUser = await UserRepository.resetPassword(user._id, newPassword);
 
     if (!updatedUser) {
         return next(new ErrorResponse(`Password update error`, 500));
