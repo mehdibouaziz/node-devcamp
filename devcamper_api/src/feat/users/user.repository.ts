@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import {Types} from "mongoose";
 import type {ParsedQs} from "qs";
 import complexQuery from "../../utils/complexQuery.ts";
+import log from "../../utils/niceConsole.ts";
 
 
 const getUsers = async (reqQuery: ParsedQs) => {
@@ -75,11 +76,14 @@ const resetPassword = async (id: Types.ObjectId, password: string) => {
 }
 
 const deleteUser = async (id: Types.ObjectId) => {
-    const user = User.find(id);
+    const user = await User.findById(id);
+
     if (!user) {
+        log.error(`User with id ${id} not found`);
         return;
     }
-    user.deleteOne();
+
+    await user.deleteOne();
 }
 
 export default {
