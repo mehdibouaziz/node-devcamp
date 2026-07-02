@@ -13,6 +13,7 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
         token = req.headers.authorization.split(" ")[1];
     }
+    // next lines can be used to log in with the cookie from sendTokenResponse instead of putting bearer tokens in header
     // else if (req.cookies.token) {
     //     token = req.cookies.token;
     // }
@@ -41,7 +42,7 @@ export const authorizeRole = (...roles: string []) => {
         if(!roles.includes(res.locals.user.role)) {
             return next(new ErrorResponse(`Unauthorized access for users of role: ${res.locals.user.role}`, 403));
         }
-        
+
         next();
     }
 }
