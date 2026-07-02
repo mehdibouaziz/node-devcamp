@@ -1,4 +1,5 @@
 import {Model, model, Schema, Types} from 'mongoose';
+import Bootcamp from "../bootcamps/bootcamp.model.ts";
 
 
 export interface IReviewDocument {
@@ -15,7 +16,7 @@ export interface IReview extends IReviewDocument {
 }
 
 export interface IReviewModel extends Model<IReview> {
-    // statics
+    getAverageRating(bootcampId: Types.ObjectId): Promise<void>;
 }
 
 const ReviewSchema = new Schema({
@@ -53,6 +54,27 @@ const ReviewSchema = new Schema({
 
 // Limit to 1 review per user per bootcamp
 ReviewSchema.index({bootcamp: 1, user: 1}, {unique: true});
+
+ReviewSchema.static('getAverageRating', async function getAverageRating(bootcampId: Types.ObjectId) {
+    const aggregate = await this.aggregate([
+        {
+            $match: {bootcamp: bootcampId},
+        },
+        {
+            $group: {
+                _id: '$bootcamp',
+                averageRating: {$avg: '$rating'}
+            }
+        }
+    ])
+    const newAverageRating = aggregate[0]?.averageRating ?
+        Math.ceil(aggregate[0]?.averageRating * 10) / 10
+        : null;
+
+    await Bootcamp.findByIdAndUpdate(bootcampId, {
+        averageRating: newAverageRating,
+    })
+});
 
 const Review: IReviewModel = model<IReview, IReviewModel>('Review', ReviewSchema);
 

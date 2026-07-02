@@ -5,7 +5,7 @@ import {
     createBootcamp,
     updateBootcamp,
     deleteBootcamp,
-    getBootcampsInRadius, uploadPhoto
+    getBootcampsInRadius, uploadPhoto, updateAvg
 } from './bootcamp.controller.ts';
 import coursesRouter from "../courses/course.route.ts";
 import reviewsRouter from "../reviews/review.route.ts";
@@ -21,6 +21,10 @@ router
     .route('/')
     .get(getBootcamps)
     .post(protect, authorizeRole('publisher', 'admin'), createBootcamp);
+
+router
+    .route('/update-avg')
+    .get(protect, authorizeRole('publisher', 'admin'), updateAvg)
 
 router
     .route('/radius')

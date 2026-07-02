@@ -69,14 +69,16 @@ const courseSchema = new Schema<ICourse, CourseModelType>({
                 {
                     $group: {
                         _id: '$bootcamp',
-                        averageCost: { $avg: '$tuition'}
+                        averageCost: {$avg: '$tuition'}
                     }
                 }
             ]);
-            const newAverageCost = aggregate[0]?.averageCost;
+            const newAverageCost = aggregate[0]?.averageCost ?
+                Math.ceil(aggregate[0]?.averageCost / 10) * 10
+                : null;
 
             await Bootcamp.findByIdAndUpdate(bootcampId, {
-                averageCost: newAverageCost ?? null,
+                averageCost: newAverageCost,
             });
         }
     }

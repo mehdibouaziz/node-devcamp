@@ -4,6 +4,9 @@ import ErrorResponse from "../../utils/errorResponse.ts";
 import asyncHandler from "../../middleware/asyncHandler.ts";
 import type {IUser} from "../users/user.model.ts";
 import type {HydratedDocument} from "mongoose";
+import Course from "../courses/course.model.ts";
+import Review from "../reviews/review.model.ts";
+import log from "../../utils/niceConsole.ts";
 
 /**
  * @desc Get all bootcamps
@@ -194,5 +197,28 @@ export const uploadPhoto = asyncHandler(async (req: Request, res: Response, next
         .json({
             success: true,
             data: file.name
+        });
+})
+
+/**
+ * @desc Update all the average ratings and costs
+ * @route GET /api/v1/bootcamps/update-avg
+ * @access Private
+ */
+export const updateAvg = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const {data} = await BootcampR.fetchBootcamps({});
+    log.info('Updating average ratings and costs...')
+
+    for (const bootcamp of data) {
+        await Course.getAverageCost(bootcamp._id);
+        await Review.getAverageRating(bootcamp._id);
+    }
+
+    log.success('DONE: Updating average ratings and costs')
+
+    res
+        .status(200)
+        .json({
+            success: true,
         });
 })

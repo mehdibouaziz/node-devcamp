@@ -45,7 +45,8 @@ const createReview = async (
 
     const review = new Review(data);
     await review.save();
-    // todo recalculate average score
+    await Review.getAverageRating(bootcampId);
+
     return review;
 }
 
@@ -61,7 +62,7 @@ const deleteReview = async (id: Types.ObjectId) => {
     if (review) {
         const bootcampId = review.bootcamp;
         await review.deleteOne();
-        // todo recalculate average score
+        await Review.getAverageRating(bootcampId);
     }
 }
 
