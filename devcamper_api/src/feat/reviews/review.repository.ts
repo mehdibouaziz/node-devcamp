@@ -2,7 +2,6 @@ import Review, {type IReviewDocument} from "./review.model.ts";
 import {Types} from "mongoose";
 import complexQuery from "../../utils/complexQuery.ts";
 import type {ParsedQs} from "qs";
-import type {NextFunction} from "express";
 import ErrorResponse from "../../utils/errorResponse.ts";
 
 
@@ -24,6 +23,13 @@ const getReview = async (id?: string | string[]) => {
         path: 'bootcamp',
         select: 'name description'
     });
+}
+
+const getReviewByUserAndBootcamp = async (userId: string, bootcampId: string) => {
+    return Review.findOne({
+        user: userId,
+        bootcamp: bootcampId
+    })
 }
 
 const createReview = async (
@@ -70,6 +76,7 @@ export default {
     getReviews,
     getReviewsByBootcamp,
     getReview,
+    getReviewByUserAndBootcamp,
     createReview,
     updateReview,
     deleteReview,

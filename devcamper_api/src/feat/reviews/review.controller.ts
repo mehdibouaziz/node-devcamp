@@ -5,6 +5,7 @@ import ErrorResponse from "../../utils/errorResponse.ts";
 import BootcampR from "../bootcamps/bootcamp.repository.ts";
 import type {HydratedDocument} from "mongoose";
 import type {IUser} from "../users/user.model.ts";
+import type {IReviewDocument} from "./review.model.ts";
 
 
 /**
@@ -95,12 +96,23 @@ export const createReview = async (req: Request, res: Response, next: NextFuncti
 }
 
 /**
- * @desc Update review
+ * @desc Update review, found directly by review's id, or find the logged-in user's review for the route's bootcampId
+ * @route PUT /api/v1/bootcamps/:bootcampId/reviews
  * @route PUT /api/v1/reviews/:id
  * @access Private
  */
 export const updateReview = async (req: Request, res: Response, next: NextFunction) => {
-    const review = await ReviewRepository.getReview(req.params.id);
+    let review: HydratedDocument<IReviewDocument> | null;
+
+    if (req.params.bootcampId) {
+        review = await ReviewRepository.getReviewByUserAndBootcamp(
+            res.locals.user._id,
+            req.params.bootcampId as string,
+        )
+
+    } else {
+        review = await ReviewRepository.getReview(req.params.id);
+    }
 
     if (!review) {
         return next(new ErrorResponse(`Review not found`, 404));

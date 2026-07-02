@@ -12,7 +12,6 @@ const getUsers = async (reqQuery: ParsedQs) => {
 
 const getUser = async (id?: string | string[]) => {
     return User.findById(id)
-    // todo add populate?
 }
 
 const getOneUserByFields = async (userFields: Partial<IUserDocument>) => {

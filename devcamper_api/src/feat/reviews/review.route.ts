@@ -8,7 +8,8 @@ const router = express.Router({mergeParams: true});
 router
     .route('/')
     .get(getReviews)
-    .post(protect, createReview);
+    .post(protect, createReview)
+    .put(protect, updateReview);
 
 router
     .route('/:id')
