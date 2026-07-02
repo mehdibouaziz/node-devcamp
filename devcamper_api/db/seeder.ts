@@ -8,6 +8,7 @@ import log from "../src/utils/niceConsole.ts";
 import {seedBootcamps, deleteBootcamps} from "../src/feat/bootcamps/bootcamp.seeder.ts";
 import {deleteCourses, seedCourses} from "../src/feat/courses/course.seeder.ts";
 import {deleteUsers, seedUsers} from "../src/feat/users/user.seeder.ts";
+import {deleteReviews, seedReviews} from "../src/feat/reviews/review.seeder.ts";
 
 
 if (process.env.NODE_ENV !== "production") {
@@ -21,9 +22,10 @@ await connectDB(uri);
 
 // import into DB
 const importData = async () => {
+    await seedUsers();
     await seedBootcamps();
     await seedCourses();
-    await seedUsers();
+    await seedReviews();
 }
 
 // DELETE database
@@ -31,6 +33,7 @@ const deleteData = async () => {
     await deleteBootcamps();
     await deleteCourses();
     await deleteUsers();
+    await deleteReviews();
 }
 
 

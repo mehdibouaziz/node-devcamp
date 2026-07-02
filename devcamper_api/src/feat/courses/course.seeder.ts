@@ -3,15 +3,21 @@ import courses from "./courses.json" with {type: 'json'};
 import log from "../../utils/niceConsole.ts";
 import CourseRepository from "./course.repository.ts";
 import BootcampRepository from "../bootcamps/bootcamp.repository.ts";
-import _ from "lodash";
+import UserRepository from "../users/user.repository.ts";
 
 export const seedCourses = async () => {
     try {
         log.info('Importing courses...');
         for (const course of courses) {
-            const bootcamp = await BootcampRepository.fetchBootcamp(course.bootcamp);
-            if (bootcamp) {
-                await CourseRepository.createCourse(_.omit(course, 'bootcamp'), bootcamp._id);
+            const {bootcamp: bootcampId, user: userId, ...data} = course;
+            const bootcamp = await BootcampRepository.fetchBootcamp(bootcampId);
+            const user = await UserRepository.getUser(userId);
+
+            if(bootcamp && user) {
+                await CourseRepository.createCourse({
+                    ...data,
+                    user: user._id,
+                }, bootcamp._id);
             }
         }
         log.success('Courses imported')

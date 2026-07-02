@@ -7,13 +7,15 @@ import {
     deleteBootcamp,
     getBootcampsInRadius, uploadPhoto
 } from './bootcamp.controller.ts';
-import courseRouter from "../courses/course.route.ts";
+import coursesRouter from "../courses/course.route.ts";
+import reviewsRouter from "../reviews/review.route.ts";
 import {authorizeRole, protect} from "../../middleware/auth.ts";
 
 const router = express.Router();
 
 // reroute to related resources
-router.use('/:bootcampId/courses', courseRouter);
+router.use('/:bootcampId/courses', coursesRouter);
+router.use('/:bootcampId/reviews', reviewsRouter);
 
 router
     .route('/')

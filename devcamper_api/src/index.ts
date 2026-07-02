@@ -9,6 +9,7 @@ import bootcampsRouter from './feat/bootcamps/bootcamp.route.ts';
 import coursesRouter from './feat/courses/course.route.ts';
 import authRouter from './feat/auth/auth.route.ts';
 import usersRouter from './feat/users/user.route.ts';
+import reviewsRouter from './feat/reviews/review.route.ts';
 // utils
 import errorHandler from './middleware/error.ts';
 
@@ -40,6 +41,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/bootcamps', bootcampsRouter);
 app.use('/api/v1/courses', coursesRouter);
+app.use('/api/v1/reviews', reviewsRouter);
 
 app.get('/', (req, res) => {
     res.status(200).json({
